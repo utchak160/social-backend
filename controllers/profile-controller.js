@@ -81,7 +81,7 @@ const getAllProfile = async (req, res, next) => {
 
 const getProfileByUserId = async (req, res, next) => {
     try {
-        const profile = await Profile.findOne({user: req.params.user_id}).populate('user', ['name', 'avatar']);
+        const profile = await Profile.findOne({user: req.params.userId}).populate('user', ['name', 'avatar']);
         if (!profile) {
             return res.status(400).send({
                 msg: 'Profile not found'
@@ -101,4 +101,74 @@ const getProfileByUserId = async (req, res, next) => {
     }
 };
 
-module.exports = {getProfile, createProfile, getAllProfile, getProfileByUserId};
+const deleteProfile = async (req, res, next) => {
+    try {
+        await Profile.findOneAndRemove({user: req.authData.id})
+        await User.findOneAndRemove({_id: req.authData.id});
+        res.json({
+            msg: 'User deleted!'
+        });
+    } catch (e) {
+        console.log(e.message);
+        return res.status(500).send({
+            msg: 'Server error'
+        });
+    }
+};
+
+const addExperience = async (req, res, next) => {
+    const newExp = {
+        title: req.body.title,
+        company: req.body.company,
+        location: req.body.location,
+        from: req.body.from,
+        to: req.body.to,
+        current: req.body.current,
+        description: req.body.description
+    }
+    try {
+        const profile = await Profile.findOne({user: req.authData.id});
+        if (!profile) {
+            return res.status(400).send({
+                msg: 'There is no profile for this user'
+            });
+        }
+        await profile.experience.unshift(newExp);
+        await profile.save();
+        res.json(profile);
+    } catch (e) {
+        console.log(e.message);
+        return res.status(500).send({
+            msg: 'Server error'
+        });
+    }
+};
+
+const deleteExperience = async (req, res, next) => {
+    try {
+        const profile = await Profile.findOne({user: req.authData.id});
+        const index = await profile.experience.map(exp => exp._id).indexOf(req.params.expId);
+
+        profile.experience.splice(index, 1);
+        await profile.save();
+        res.json({
+            msg: 'Experience deleted'
+        })
+    } catch (e) {
+        console.log(e.message);
+        return res.status(500).send({
+            msg: 'Server error'
+        });
+    }
+};
+
+
+module.exports = {
+    getProfile,
+    createProfile,
+    getAllProfile,
+    getProfileByUserId,
+    deleteProfile,
+    addExperience,
+    deleteExperience
+};

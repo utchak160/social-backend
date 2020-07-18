@@ -17,7 +17,16 @@ router.post('/', [
 router.get('/all', profileController.getAllProfile);
 
 //get profile by user id
-router.get('/user/user_id', profileController.getProfileByUserId);
+router.get('/user/:userId', profileController.getProfileByUserId);
+
+//delete profile, user and post
+router.delete('/', auth, profileController.deleteProfile);
+
+//add experience
+router.put('/experience', auth, profileController.addExperience);
+
+//delete experience
+router.delete('/experience/:expId', auth, profileController.deleteExperience);
 
 module.exports = router;
 
