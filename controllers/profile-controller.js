@@ -162,6 +162,52 @@ const deleteExperience = async (req, res, next) => {
     }
 };
 
+const addEducation = async (req, res, next) => {
+    const newEdu = {
+        school: req.body.school,
+        degree: req.body.degree,
+        fieldofstudy: req.body.fieldofstudy,
+        from: req.body.from,
+        to: req.body.to,
+        current: req.body.current,
+        description: req.body.description
+    }
+    try {
+        const profile = await Profile.findOne({user: req.authData.id});
+        if (!profile) {
+            return res.status(400).send({
+                msg: 'There is no profile for this user'
+            });
+        }
+        profile.education.push(newEdu);
+        await profile.save();
+        res.json(profile);
+    } catch (e) {
+        console.log(e.message);
+        return res.status(500).send({
+            msg: 'Server error'
+        });
+    }
+};
+
+const deleteEducation = async (req, res, next) => {
+    try {
+        const profile = await Profile.findOne({user: req.authData.id});
+        const index = await profile.education.map(edu => edu._id).indexOf(req.params.expId);
+
+        profile.experience.splice(index, 1);
+        await profile.save();
+        res.json({
+            msg: 'Education deleted'
+        });
+    } catch (e) {
+        console.log(e.message);
+        return res.status(500).send({
+            msg: 'Server error'
+        });
+    }
+};
+
 
 module.exports = {
     getProfile,
@@ -170,5 +216,7 @@ module.exports = {
     getProfileByUserId,
     deleteProfile,
     addExperience,
-    deleteExperience
+    deleteExperience,
+    addEducation,
+    deleteEducation
 };

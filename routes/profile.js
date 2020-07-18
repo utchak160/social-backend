@@ -23,10 +23,24 @@ router.get('/user/:userId', profileController.getProfileByUserId);
 router.delete('/', auth, profileController.deleteProfile);
 
 //add experience
-router.put('/experience', auth, profileController.addExperience);
+router.put('/experience', [auth, [
+    check('title', 'Title is required').not().isEmpty(),
+    check('company', 'Company is required').not().isEmpty(),
+    check('from', 'Date From is required').not().isEmpty(),
+]], profileController.addExperience);
 
 //delete experience
 router.delete('/experience/:expId', auth, profileController.deleteExperience);
+
+//add education
+router.put('/education', [auth, [
+    check('school', 'School is required').not().isEmpty(),
+    check('degree', 'Degree is required').not().isEmpty(),
+    check('fieldofstudy', 'Field Of Study From is required').not().isEmpty(),
+]], profileController.addEducation);
+
+//delete experience
+router.delete('/education/:eduId', auth, profileController.deleteEducation);
 
 module.exports = router;
 
