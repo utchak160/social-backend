@@ -79,4 +79,26 @@ const getAllProfile = async (req, res, next) => {
     }
 };
 
-module.exports = {getProfile, createProfile, getAllProfile};
+const getProfileByUserId = async (req, res, next) => {
+    try {
+        const profile = await Profile.findOne({user: req.params.user_id}).populate('user', ['name', 'avatar']);
+        if (!profile) {
+            return res.status(400).send({
+                msg: 'Profile not found'
+            })
+        }
+        res.json(profile);
+    } catch (e) {
+        console.log(e.message);
+        if (e.kind === 'ObjectId') {
+            return res.status(400).send({
+                msg: 'Profile not found'
+            })
+        }
+        res.status(500).send({
+            msg: 'Server error'
+        });
+    }
+};
+
+module.exports = {getProfile, createProfile, getAllProfile, getProfileByUserId};
