@@ -37,7 +37,7 @@ const createProfile = (req, res, next) => {
         profileFields.githubusername = req.body.githubusername;
     // Skills - Spilt into array
     if (typeof req.body.skills !== 'undefined') {
-        profileFields.skills = req.body.skills.split(',');
+        profileFields.skills = req.body.skills.split(',').map(skill => skill.trim());
     }
 
     // Social
@@ -57,7 +57,7 @@ const createProfile = (req, res, next) => {
             ).then(profile => res.json(profile));
         } else {
             Profile.findOne({handle: profileFields.handle}).then(profile => {
-                if (profile) {
+                if (profile && req.body.handle) {
                     errors.handle = 'This handle already exists';
                     return res.status(400).send(errors);
                 }

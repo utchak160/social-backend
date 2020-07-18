@@ -14,7 +14,7 @@ router.post('/', [
 ], auth, profileController.createProfile);
 
 //getAllProfiles
-router.get('/', profileController.getAllProfile);
+router.get('/all', profileController.getAllProfile);
 
 //get profile by user id
 router.get('/user/user_id', profileController.getProfileByUserId);
