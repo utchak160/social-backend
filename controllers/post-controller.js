@@ -125,4 +125,57 @@ const unlikePost = async (req, res, next) => {
     }
 };
 
-module.exports = {addPost,getPosts, getPostById, deletePostById, likePost, unlikePost};
+const addComment = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).send({errors: errors.array()});
+    }
+
+    try {
+        const user = await User.findById(req.authData.id).select('-password');
+        const post = await Post.findById(req.params.postId);
+        const newComment = {
+            text: req.body.text,
+            name: user.name,
+            avatar: user.avatar,
+            user: req.authData.id
+        };
+        post.comments.unshift(newComment);
+        await post.save();
+        res.status(201).json(post.comments);
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({
+            msg: 'Server error'
+        });
+    }
+}
+
+const deleteComment = async (req, res, next) => {
+    try {
+        const post = await Post.findById(req.params.postId);
+        const comment = post.comments.find(comment => comment.id === req.params.commentId);
+        //check comment exists
+        if (!comment) {
+            return res.status(404).json({msg: 'Comment does not exist'});
+        }
+
+        //check user
+        if (comment.user.toString() !== req.authData.id) {
+            return res.status(401).json({msg: 'User not authorized'});
+        }
+
+        const index = post.comments.map(comment => comment.user.toString()).indexOf(req.authData.id);
+
+        post.comments.splice(index, 1);
+        await post.save();
+        res.json(post.comments);
+    } catch (e) {
+        console.log(e.message);
+        res.status(500).json({
+            msg: 'Server error'
+        });
+    }
+}
+
+module.exports = {addPost,getPosts, getPostById, deletePostById, likePost, unlikePost, addComment, deleteComment};

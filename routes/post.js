@@ -25,4 +25,12 @@ router.put('/like/:postId', auth, postController.likePost);
 //unlike post
 router.put('/unlike/:postId', auth, postController.unlikePost);
 
+//add comment
+router.put('/comment/:postId', [auth, [
+    check('text', 'Text is required').not().isEmpty()
+]], postController.addComment);
+
+//delete comment
+router.delete('/comment/:postId/:commentId', auth, postController.deleteComment);
+
 module.exports = router;
