@@ -86,4 +86,43 @@ const deletePostById = async (req, res, next) => {
     }
 }
 
-module.exports = {addPost,getPosts, getPostById, deletePostById};
+const likePost = async (req, res, next) => {
+    try {
+        const post = await Post.findById(req.params.postId);
+        //check if already being liked
+        if (post.likes.filter(like => like.user.toString() === req.authData.id).length > 0) {
+            return res.status(400).json({msg: 'Post already liked'});
+        }
+        post.likes.unshift({user: req.authData.id});
+
+        await post.save();
+        res.json(post.likes);
+    } catch (e) {
+        console.log(e.message);
+        res.status(500).json({
+            msg: 'Server error'
+        });
+    }
+};
+
+const unlikePost = async (req, res, next) => {
+    try {
+        const post = await Post.findById(req.params.postId);
+        //check if it is not liked yet
+        if (post.likes.filter(like => like.user.toString() === req.authData.id).length === 0) {
+            return res.status(400).json({msg: 'Post has not been liked yet'});
+        }
+        const index = post.likes.map(like => like.user.toString()).indexOf(req.authData.id);
+
+        post.likes.splice(index, 1);
+        await post.save();
+        res.json(post.likes);
+    } catch (e) {
+        console.log(e.message);
+        res.status(500).json({
+            msg: 'Server error'
+        });
+    }
+};
+
+module.exports = {addPost,getPosts, getPostById, deletePostById, likePost, unlikePost};
