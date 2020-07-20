@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const Profile = require('../models/profile');
+const Post = require('../models/post');
 const axios = require('axios');
 const {validationResult} = require('express-validator');
 
@@ -104,7 +105,8 @@ const getProfileByUserId = async (req, res, next) => {
 
 const deleteProfile = async (req, res, next) => {
     try {
-        await Profile.findOneAndRemove({user: req.authData.id})
+        await Post.findOneAndRemove({user: req.authData.id});
+        await Profile.findOneAndRemove({user: req.authData.id});
         await User.findOneAndRemove({_id: req.authData.id});
         res.json({
             msg: 'User deleted!'
