@@ -3,7 +3,7 @@ const User = require('../models/user');
 exports.getAuthUser = async (req, res, next) => {
     const {email, id} = req.authData;
     try {
-        const user = await User.findById(id);
+        const user = await User.findById(id).select('-password');
         if (!user) {
             return res.status(400).send({
                 msg: 'User details not found'
