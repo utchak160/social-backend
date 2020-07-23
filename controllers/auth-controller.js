@@ -13,7 +13,7 @@ const register = async (req, res, next) => {
     try {
         const existingUser = await User.findOne({email});
         if (existingUser) {
-            return res.status(400).json({errors: [{msgs: 'User already exists'}]});
+            return res.status(400).json({errors: [{msg: 'User already exists'}]});
         }
         const avatar = await gravatar.url(email, {
             s: '200',
