@@ -105,7 +105,7 @@ const getProfileByUserId = async (req, res, next) => {
 
 const deleteProfile = async (req, res, next) => {
     try {
-        await Post.findOneAndRemove({user: req.authData.id});
+        await Post.deleteMany({user: req.authData.id});
         await Profile.findOneAndRemove({user: req.authData.id});
         await User.findOneAndRemove({_id: req.authData.id});
         res.json({
