@@ -154,9 +154,7 @@ const deleteExperience = async (req, res, next) => {
 
         profile.experience.splice(index, 1);
         await profile.save();
-        res.json({
-            msg: 'Experience deleted'
-        })
+        res.json(profile)
     } catch (e) {
         console.log(e.message);
         return res.status(500).send({
@@ -196,13 +194,11 @@ const addEducation = async (req, res, next) => {
 const deleteEducation = async (req, res, next) => {
     try {
         const profile = await Profile.findOne({user: req.authData.id});
-        const index = await profile.education.map(edu => edu._id).indexOf(req.params.expId);
+        const index = await profile.education.map(edu => edu._id).indexOf(req.params.eduId);
 
-        profile.experience.splice(index, 1);
+        profile.education.splice(index, 1);
         await profile.save();
-        res.json({
-            msg: 'Education deleted'
-        });
+        res.json(profile);
     } catch (e) {
         console.log(e.message);
         return res.status(500).send({

@@ -39,7 +39,7 @@ const register = async (req, res, next) => {
         }
         const token = jwt.sign(payload, process.env.SECRET_KEY, {expiresIn: '1h'}, (err, token) => {
             if (err) {
-                return res.status(400).send('Token not generated');
+                return res.status(400).json({errors: [{msg: 'Token not generated'}]});
             }
             res.status(201).json({token});
         });
@@ -65,13 +65,13 @@ const login = async (req, res, next) => {
     try {
         const user = await User.findOne({email});
         if (!user) {
-            return res.status(400).json({errors: [{msgs: 'Invalid Credentials'}]});
+            return res.status(400).json({errors: [{msg: 'Invalid Credentials'}]});
         }
         const checkPassword = await bcrypt.compare(password, user.password);
 
         console.log(checkPassword);
         if (!checkPassword) {
-            return res.status(400).json({errors: [{msgs: 'Invalid Credentials'}]});
+            return res.status(400).json({errors: [{msg: 'Invalid Credentials'}]});
         }
 
         const payload = {
