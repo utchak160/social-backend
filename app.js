@@ -26,11 +26,16 @@ app.use((req, res, next) => {
     next();
 });
 
+//Public Test Route
+app.get('/', (req, res, next) => {
+    res.send(`<b>It\s working fine</b>`)
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/post', postRoutes);
 
 app.listen(PORT, () => {
-    console.log(`Server is running on ${PORT}`);
+    console.log(`**Server is running on ${PORT}**`);
 });
