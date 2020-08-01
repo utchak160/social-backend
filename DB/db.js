@@ -8,9 +8,9 @@ const connect = async () => {
             useFindAndModify: false,
             useCreateIndex: true
         });
-        console.log('**DB connected**');
+        console.log('DB connected');
     } catch (e) {
-        console.log('**DB connection failed**');
+        console.log('DB connection failed');
     }
 }
 
